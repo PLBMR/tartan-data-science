@@ -5,6 +5,7 @@
 require(ggplot2)
 require(ggmap)
 require(maps)
+require(dplyr)
 
 #standard constants
 pchVal = 19 #for most plots
@@ -84,22 +85,30 @@ legend("bottomleft", legend=levels(numUses.map$categories), pch=pchVal,
 
 # Ian's code: the following code looks at the 
 # start-stop frequencies, and calculates the distance between them
-# data: [ start station, end station, distance, trip duration, timestart] 
+# data: [ start station-end station, startLat, startLong, endLat, endLong,
+# distance, trip duration, timestart] 
 # I added time start as depending on what time they commute it
 # could give us an idea of what the traffic looks like
-startLoc = bikeFrame$start.station.name
-endLoc = bikeFrame$end.station.name
-latDiff = (bikeFrame$start.station.latitude - 
-             bikeFrame$end.station.latitude)^2 
 
-longDiff = (bikeFrame$start.station.longitude - 
-              bikeFrame$end.station.longitude)^2 
+latOne = bikeFrame$start.station.latitude
+longOne = bikeFrame$start.station.longitude 
+latTwo = bikeFrame$end.station.latitude
+longTwo = bikeFrame$end.station.longitude
+latDiff = (latOne - latTwo)^2 
+tripID = (bikeFrame$start.station.id * 1000) + bikeFrame$end.station.id
+longDiff = (longOne - longTwo)^2 
 l2Distance = sqrt(latDiff + longDiff)
 timeStart = bikeFrame$starttime
-stationFrame = data.frame(startLoc, endLoc, l2Distance, 
+
+stationFrame = data.frame(tripID, latOne, longOne,
+                          latTwo, longTwo, l2Distance, 
                           bikeFrame$tripduration ,timeStart)
 
-ggmap(get_map(location = 'new york', zoom = 13)) +
-  geom_point(data = bikeFrame, aes(x=start.station.longitude, 
-                                   y=start.station.latitude, size = 1), color="orange")
+minDist = median(l2Distance) + (4 * sd(l2Distance))
+toPlot = subset(stationFrame, l2Distance > minDist)
+
+ggmap(get_map(location = 'new york', zoom = 13))  + 
+  geom_segment(data = toPlot, mapping = aes(x = longOne, xend = longTwo, y = latOne, yend = latTwo))
+
+# second option is duplicated/ combining the data
 #naive modelling
