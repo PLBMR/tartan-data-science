@@ -11,6 +11,8 @@ datasetString = (
 "http://www.stat.cmu.edu/tartandatasciencecup/20150708-citibike-tripdata.csv")
 bikeFrame = read.csv(datasetString,header = TRUE)
 
+#get rid of missing values for gender model
+genderBikeFrame = bikeFrame[which(bikeFrame$gender != 0),]
 #univariate analysis of quantitative data
 par(mfrow = c(2,4))
 hist(bikeFrame$tripduration,freq = FALSE, col = "Blue")
@@ -94,3 +96,6 @@ timeStart = bikeFrame$starttime
 
 stationFrame = data.frame(startLoc, endLoc, l2Distance, 
                           bikeFrame$tripduration ,timeStart)
+
+#naive modelling
+
