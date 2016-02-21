@@ -47,6 +47,7 @@ mapper <- function(z, levels, isStartStation, ...) {
     }
     invisible(list(quantiles=z.quantiles, categories=z.categories))
 }
+<<<<<<< HEAD
 #then plot each latitude-longitude map based on desired variables to consider
 stationLevelFrame = data.frame(station = unique(bikeFrame$start.station.name),
                             latitude = rep(
@@ -61,19 +62,29 @@ for (i in 1:dim(stationFrame)[1]){
     stationLevelFrame$latitude = givenStationObs$start.station.latitude[1]
     stationLevelFrame$longitude = givenStationObs$start.station.longitude[1]
 }
+=======
+>>>>>>> 2671788344387b4570576ec0399c5b64a4202475
 
+#then plot each latitude-longitude map based on desired variables to consider
+<<<<<<< HEAD
 # Ian's code: the following code looks at the 
 # start-stop frequencies, and calculates the distance between them
-# data is formatted as [ start station, end station, distance, trip duration, timestart] 
-# I chose to add in time start as I think that depending on what time they commute that
-# could give us a good idea of what the traffic in the area looks like
+# data: [ start station, end station, distance, trip duration, timestart] 
+# I added time start as depending on what time they commute it
+# could give us an idea of what the traffic looks like
 startLoc = bikeFrame$start.station.name
 endLoc = bikeFrame$end.station.name
-latDiff = (bikeFrame$start.station.latitude - bikeFrame$end.station.latitude)^2 
-longDiff = (
-        bikeFrame$start.station.longitude - bikeFrame$end.station.longitude)^2 
+latDiff = (bikeFrame$start.station.latitude - 
+             bikeFrame$end.station.latitude)^2 
+
+longDiff = (bikeFrame$start.station.longitude - 
+              bikeFrame$end.station.longitude)^2 
 l2Distance = sqrt(latDiff + longDiff)
 timeStart = bikeFrame$starttime
 
-stationFrame = data.frame(startLoc, endLoc, 
-                          l2Distance, bikeFrame$tripduration ,timeStart)
+stationFrame = data.frame(startLoc, endLoc, l2Distance, 
+                          bikeFrame$tripduration ,timeStart)
+
+numLevels = 4
+stationFrame = data.frame(station = unique(bikeFrame$start.station.name))
+stationFrame
