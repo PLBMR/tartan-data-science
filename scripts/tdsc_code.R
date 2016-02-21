@@ -20,11 +20,11 @@ hist(bikeFrame$end.station.longitude, freq = FALSE, col = "Blue")
 userTypeCounts = table(bikeFrame$usertype)
 barplot(userTypeCounts, col = "Blue")
 #results:
-#   -way more males than females using serviec
+#   -way more males than females using service
 #   -many more millenials using the service
 #   -latitude, longitude variables are distributed in a relatively friendly
 #   manner
-#   -many more subscribers than one-off customer
+#   -many more subscribers than one-off customers
 #map out based on longitude and latitude
 mapper <- function(z, levels, isStartStation, ...) {
     # Which quantiles do we need?
@@ -48,6 +48,19 @@ mapper <- function(z, levels, isStartStation, ...) {
     invisible(list(quantiles=z.quantiles, categories=z.categories))
 }
 #then plot each latitude-longitude map based on desired variables to consider
+stationLevelFrame = data.frame(station = unique(bikeFrame$start.station.name),
+                            latitude = rep(
+                            0,length(unique(bikeFrame$start.station.name))),
+                            longitude = rep(
+                            0,length(unique(bikeFrame$start.station.name))))
+#get longitude and latitude pairs for each station
+for (i in 1:dim(stationFrame)[1]){
+    givenStation = stationLevelFrame$station[i]
+    givenStationObs = bikeFrame[
+                        which(bikeFrame$start.station.name == givenStation),]
+    stationLevelFrame$latitude = givenStationObs$start.station.latitude[1]
+    stationLevelFrame$longitude = givenStationObs$start.station.longitude[1]
+}
 
 # Ian's code: the following code looks at the 
 # start-stop frequencies, and calculates the distance between them
