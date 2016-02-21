@@ -47,7 +47,6 @@ mapper <- function(z, levels, isStartStation, ...) {
     }
     invisible(list(quantiles=z.quantiles, categories=z.categories))
 }
-<<<<<<< HEAD
 #then plot each latitude-longitude map based on desired variables to consider
 stationLevelFrame = data.frame(station = unique(bikeFrame$start.station.name),
                             latitude = rep(
@@ -62,11 +61,9 @@ for (i in 1:dim(stationFrame)[1]){
     stationLevelFrame$latitude = givenStationObs$start.station.latitude[1]
     stationLevelFrame$longitude = givenStationObs$start.station.longitude[1]
 }
-=======
->>>>>>> 2671788344387b4570576ec0399c5b64a4202475
+
 
 #then plot each latitude-longitude map based on desired variables to consider
-<<<<<<< HEAD
 # Ian's code: the following code looks at the 
 # start-stop frequencies, and calculates the distance between them
 # data: [ start station, end station, distance, trip duration, timestart] 
@@ -84,7 +81,3 @@ timeStart = bikeFrame$starttime
 
 stationFrame = data.frame(startLoc, endLoc, l2Distance, 
                           bikeFrame$tripduration ,timeStart)
-
-numLevels = 4
-stationFrame = data.frame(station = unique(bikeFrame$start.station.name))
-stationFrame
