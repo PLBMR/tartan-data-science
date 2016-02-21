@@ -6,3 +6,5 @@ Naive Modelling:
     -Decision Tree of Gender on Latitude and Longitude Variables
         --Implication -> latitude and longitude are not saying much about the
             gender
+    -Decision Tree of Customer on Latitude and Longitude Variables
+        --Implication: Huge amount of interaction between these two variables

@@ -5,6 +5,7 @@
 library(tree)
 library(bla)
 library(rpart)
+library(np)
 require(ggplot2)
 require(ggmap)
 require(maps)
@@ -102,6 +103,11 @@ timeStart = bikeFrame$starttime
 stationFrame = data.frame(startLoc, endLoc, l2Distance, 
                           bikeFrame$tripduration ,timeStart)
 
+
+ggmap(get_map(location = 'new york', zoom = 13)) +
+  geom_point(data = bikeFrame, aes(x=start.station.longitude, 
+                                   y=start.station.latitude, size = 1), 
+                                    color="orange")
 #naive modeling
 #decision tree
 #model latitude and longitude with gender
@@ -109,10 +115,11 @@ femaleObs = which(genderBikeFrame$gender == 2)
 genderBikeFrame$genderString = rep("N",dim(genderBikeFrame)[1]) 
 genderBikeFrame$genderString[femaleObs] = "F"
 genderBikeFrame$genderString[!femaleObs] = "M"
-naiveGenderMod.tree = rpart(genderString ~ start.station.latitude + 
+genderMod.tree = tree(gender ~ start.station.latitude + 
                            start.station.longitude + end.station.latitude 
-                           + end.station.longitude,
-                           data = genderBikeFrame,method = "class")
+                           + end.station.longitude + birth.year
+                           + tripduration,
+                           data = genderBikeFrame)
 plot(genderMod.tree)
 text(genderMod.tree,pretty=1,cex=.75)
 #consider customers
@@ -121,8 +128,20 @@ naiveCustomerMod.tree = rpart(usertype ~ start.station.latitude +
                              + end.station.longitude,
                              method = "class",data = bikeFrame)
 plot(naiveCustomerMod.tree)
-text(naiveCustomerMod.tree,pretty=1,cex=.25)
+text(naiveCustomerMod.tree,pretty=1,cex=.6,use.n=TRUE, all=TRUE)
+summary(naiveCustomerMod.tree)
 
-ggmap(get_map(location = 'new york', zoom = 13)) +
-  geom_point(data = bikeFrame, aes(x=start.station.longitude, 
-                                   y=start.station.latitude, size = 1), color="orange")
+#cross-validated regression for subscribers
+#get number of subscribers per station
+stationLevelFrame$numSubscribers = rep(0,length(stationLevelFrame$station))
+for (i in 1:length(stationLevelFrame$station)){
+    givenStation = stationLevelFrame$station[i]
+    stationSubscriberObs = which(bikeFrame$start.station.name == givenStation
+                                 & bikeFrame$usertype == "Subscriber")
+    print(stationSubscriberObs)
+    stationLevelFrame$numSubscribers[i] = length(stationSubscriberObs)
+}
+#get average trip duration
+generalModel.ke = npreg(numSubscribers ~ latitude + longitude,
+                        data = stationLevelFrame)
+
