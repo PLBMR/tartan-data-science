@@ -48,6 +48,19 @@ mapper <- function(z, levels, isStartStation, ...) {
     invisible(list(quantiles=z.quantiles, categories=z.categories))
 }
 #then plot each latitude-longitude map based on desired variables to consider
-numLevels = 4
-stationFrame = data.frame(station = unique(bikeFrame$start.station.name))
-stationFrame
+
+# Ian's code: the following code looks at the 
+# start-stop frequencies, and calculates the distance between them
+# data is formatted as [ start station, end station, distance, trip duration, timestart] 
+# I chose to add in time start as I think that depending on what time they commute that
+# could give us a good idea of what the traffic in the area looks like
+startLoc = bikeFrame$start.station.name
+endLoc = bikeFrame$end.station.name
+latDiff = (bikeFrame$start.station.latitude - bikeFrame$end.station.latitude)^2 
+longDiff = (
+        bikeFrame$start.station.longitude - bikeFrame$end.station.longitude)^2 
+l2Distance = sqrt(latDiff + longDiff)
+timeStart = bikeFrame$starttime
+
+stationFrame = data.frame(startLoc, endLoc, 
+                          l2Distance, bikeFrame$tripduration ,timeStart)
