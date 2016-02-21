@@ -2,6 +2,9 @@
 #code meant to study the TDSC dataset
 
 #imports
+library(tree)
+library(bla)
+library(rpart)
 
 #standard constants
 pchVal = 19 #for most plots
@@ -97,5 +100,23 @@ timeStart = bikeFrame$starttime
 stationFrame = data.frame(startLoc, endLoc, l2Distance, 
                           bikeFrame$tripduration ,timeStart)
 
-#naive modelling
-
+#naive modeling
+#decision tree
+#model latitude and longitude with gender
+femaleObs = which(genderBikeFrame$gender == 2)
+genderBikeFrame$genderString = rep("N",dim(genderBikeFrame)[1]) 
+genderBikeFrame$genderString[femaleObs] = "F"
+genderBikeFrame$genderString[!femaleObs] = "M"
+naiveGenderMod.tree = rpart(genderString ~ start.station.latitude + 
+                           start.station.longitude + end.station.latitude 
+                           + end.station.longitude,
+                           data = genderBikeFrame,method = "class")
+plot(genderMod.tree)
+text(genderMod.tree,pretty=1,cex=.75)
+#consider customers
+naiveCustomerMod.tree = rpart(usertype ~ start.station.latitude + 
+                             start.station.longitude + end.station.latitude 
+                             + end.station.longitude,
+                             method = "class",data = bikeFrame)
+plot(naiveCustomerMod.tree)
+text(naiveCustomerMod.tree,pretty=1,cex=.25)
