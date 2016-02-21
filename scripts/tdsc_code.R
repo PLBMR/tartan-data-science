@@ -66,12 +66,17 @@ for (i in 1:dim(stationLevelFrame)[1]){
                         bikeFrame$start.station.name == givenStation)])
 }
 #then plot this using the mapper
+par(mfrow=c(1,1))
 numUses.map = mapper(stationLevelFrame$numUses,numLevels,pch = pchVal,
                      xlab= "Longitude", ylab = "Latitude",
                      main = "Num Uses on\nLongitude and Latitude")
 legend("bottomleft", legend=levels(numUses.map$categories), pch=pchVal,
-       col=terrain.colors(numLevels), cex=0.8)
+       col=terrain.colors(numLevels), cex=0.4)
+#results: largest amount of usage is in midtown to UWS, UES manhattan
+#get subscriber usage
+
 #then plot each latitude-longitude map based on desired variables to consider
+
 # Ian's code: the following code looks at the 
 # start-stop frequencies, and calculates the distance between them
 # data: [ start station, end station, distance, trip duration, timestart] 
