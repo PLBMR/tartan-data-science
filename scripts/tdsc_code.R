@@ -5,6 +5,9 @@
 library(tree)
 library(bla)
 library(rpart)
+require(ggplot2)
+require(ggmap)
+require(maps)
 
 #standard constants
 pchVal = 19 #for most plots
@@ -96,7 +99,6 @@ longDiff = (bikeFrame$start.station.longitude -
               bikeFrame$end.station.longitude)^2 
 l2Distance = sqrt(latDiff + longDiff)
 timeStart = bikeFrame$starttime
-
 stationFrame = data.frame(startLoc, endLoc, l2Distance, 
                           bikeFrame$tripduration ,timeStart)
 
@@ -120,3 +122,7 @@ naiveCustomerMod.tree = rpart(usertype ~ start.station.latitude +
                              method = "class",data = bikeFrame)
 plot(naiveCustomerMod.tree)
 text(naiveCustomerMod.tree,pretty=1,cex=.25)
+
+ggmap(get_map(location = 'new york', zoom = 13)) +
+  geom_point(data = bikeFrame, aes(x=start.station.longitude, 
+                                   y=start.station.latitude, size = 1), color="orange")
