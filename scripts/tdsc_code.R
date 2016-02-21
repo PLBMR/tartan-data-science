@@ -3,12 +3,15 @@
 
 #imports
 library(tree)
-library(bla)
 library(rpart)
 require(ggplot2)
 require(ggmap)
+require(methods)
+require(grDevices)
+require(datasets)
 require(maps)
 require(dplyr)
+
 
 #standard constants
 pchVal = 19 #for most plots
@@ -98,17 +101,25 @@ longOne = bikeFrame$start.station.longitude
 latTwo = bikeFrame$end.station.latitude
 longTwo = bikeFrame$end.station.longitude
 latDiff = (latOne - latTwo)^2 
-tripID = (bikeFrame$start.station.id * 1000) + bikeFrame$end.station.id
+tripID = (bikeFrame$start.station.id * 10000) + bikeFrame$end.station.id
+# since the max start.station.id is 3002, we multiply by 10000 then add the remainder
+# to find a unique overall trip ID
+tripID.freq = table(tripID)
 longDiff = (longOne - longTwo)^2 
 l2Distance = sqrt(latDiff + longDiff)
 timeStart = bikeFrame$starttime
+gender = bikeFrame$gender
+type = bikeFrame$usertype
 
 stationFrame = data.frame(tripID, latOne, longOne,
                           latTwo, longTwo, l2Distance, 
-                          bikeFrame$tripduration ,timeStart)
+                          bikeFrame$tripduration ,timeStart, 
+                          gender, type)
 
-minDist = median(l2Distance) + (4 * sd(l2Distance))
-toPlot = subset(stationFrame, l2Distance > minDist)
+minDist = median(l2Distance)
+toPlot = subset(stationFrame, (tripID.freq > 10)) # || l2Distance > minDist))
+toPlot = subset(toPlot, (l2Distance > minDist))
+toPlot = subset(toPlot, (gender == 2) || (type = "Customer"))
 
 ggmap(get_map(location = 'new york', zoom = 13))  + 
   geom_segment(data = toPlot, mapping = aes(x = longOne, xend = longTwo, y = latOne, yend = latTwo))
