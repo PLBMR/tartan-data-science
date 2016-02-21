@@ -118,7 +118,7 @@ stationFrame = data.frame(tripID, latOne, longOne,
                           gender, type)
 
 minDist = median(l2Distance)
-toPlot = subset(stationFrame, (tripID.freq > 10)) # || l2Distance > minDist))
+toPlot = subset(stationFrame, (tripID.freq > 8)) # || l2Distance > minDist))
 toPlot = subset(toPlot, (l2Distance > minDist))
 toPlot = subset(toPlot, (gender == 2) || (type = "Customer"))
 
