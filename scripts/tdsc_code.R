@@ -3,12 +3,16 @@
 
 #imports
 library(tree)
-library(bla)
 library(rpart)
 library(np)
 require(ggplot2)
 require(ggmap)
+require(methods)
+require(grDevices)
+require(datasets)
 require(maps)
+require(dplyr)
+
 
 #standard constants
 pchVal = 19 #for most plots
@@ -88,26 +92,48 @@ legend("bottomleft", legend=levels(numUses.map$categories), pch=pchVal,
 
 # Ian's code: the following code looks at the 
 # start-stop frequencies, and calculates the distance between them
-# data: [ start station, end station, distance, trip duration, timestart] 
+# data: [ start station-end station, startLat, startLong, endLat, endLong,
+# distance, trip duration, timestart] 
 # I added time start as depending on what time they commute it
 # could give us an idea of what the traffic looks like
-startLoc = bikeFrame$start.station.name
-endLoc = bikeFrame$end.station.name
-latDiff = (bikeFrame$start.station.latitude - 
-             bikeFrame$end.station.latitude)^2 
 
-longDiff = (bikeFrame$start.station.longitude - 
-              bikeFrame$end.station.longitude)^2 
+latOne = bikeFrame$start.station.latitude
+longOne = bikeFrame$start.station.longitude 
+latTwo = bikeFrame$end.station.latitude
+longTwo = bikeFrame$end.station.longitude
+latDiff = (latOne - latTwo)^2 
+tripID = (bikeFrame$start.station.id * 10000) + bikeFrame$end.station.id
+# since the max start.station.id is 3002, we multiply by 10000 then add the remainder
+# to find a unique overall trip ID
+tripID.freq = table(tripID)
+longDiff = (longOne - longTwo)^2 
 l2Distance = sqrt(latDiff + longDiff)
 timeStart = bikeFrame$starttime
-stationFrame = data.frame(startLoc, endLoc, l2Distance, 
-                          bikeFrame$tripduration ,timeStart)
+gender = bikeFrame$gender
+type = bikeFrame$usertype
 
+stationFrame = data.frame(tripID, latOne, longOne,
+                          latTwo, longTwo, l2Distance, 
+                          bikeFrame$tripduration ,timeStart, 
+                          gender, type)
+
+minDist = median(l2Distance)
+toPlot = subset(stationFrame, (tripID.freq > 10)) # || l2Distance > minDist))
+toPlot = subset(toPlot, (l2Distance > minDist))
+toPlot = subset(toPlot, (gender == 2) || (type = "Customer"))
+
+<<<<<<< HEAD
 
 ggmap(get_map(location = 'new york', zoom = 13)) +
   geom_point(data = bikeFrame, aes(x=start.station.longitude, 
                                    y=start.station.latitude, size = 1), 
                                     color="orange")
+=======
+ggmap(get_map(location = 'new york', zoom = 13))  + 
+  geom_segment(data = toPlot, mapping = aes(x = longOne, xend = longTwo, y = latOne, yend = latTwo))
+
+# second option is duplicated/ combining the data
+>>>>>>> a3786aa22cc367ad98fc90392f2cef5a49495a94
 #naive modeling
 #decision tree
 #model latitude and longitude with gender
@@ -128,6 +154,7 @@ naiveCustomerMod.tree = rpart(usertype ~ start.station.latitude +
                              + end.station.longitude,
                              method = "class",data = bikeFrame)
 plot(naiveCustomerMod.tree)
+<<<<<<< HEAD
 text(naiveCustomerMod.tree,pretty=1,cex=.6,use.n=TRUE, all=TRUE)
 summary(naiveCustomerMod.tree)
 
@@ -145,3 +172,6 @@ for (i in 1:length(stationLevelFrame$station)){
 generalModel.ke = npreg(numSubscribers ~ latitude + longitude,
                         data = stationLevelFrame)
 
+=======
+text(naiveCustomerMod.tree,pretty=1,cex=.25)
+>>>>>>> a3786aa22cc367ad98fc90392f2cef5a49495a94
