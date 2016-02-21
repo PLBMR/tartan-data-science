@@ -107,7 +107,6 @@ stationFrame = data.frame(tripID, latOne, longOne,
                           latTwo, longTwo, l2Distance, 
                           bikeFrame$tripduration ,timeStart)
 
-<<<<<<< HEAD
 minDist = median(l2Distance) + (4 * sd(l2Distance))
 toPlot = subset(stationFrame, l2Distance > minDist)
 
@@ -135,7 +134,3 @@ naiveCustomerMod.tree = rpart(usertype ~ start.station.latitude +
                              method = "class",data = bikeFrame)
 plot(naiveCustomerMod.tree)
 text(naiveCustomerMod.tree,pretty=1,cex=.25)
-
-ggmap(get_map(location = 'new york', zoom = 13)) +
-  geom_point(data = bikeFrame, aes(x=start.station.longitude, 
-                                   y=start.station.latitude, size = 1), color="orange")
