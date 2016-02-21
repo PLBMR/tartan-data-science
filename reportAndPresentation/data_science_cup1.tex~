@@ -20,6 +20,7 @@
 \begin{document}
 \maketitle
 
+<<<<<<< HEAD
 \section{Techniques}
 We were interested in using longitude and latitude to predict the number of
 subscriber users in a given area, to predict whether or not a female user
