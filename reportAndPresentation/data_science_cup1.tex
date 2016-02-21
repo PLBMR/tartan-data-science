@@ -20,48 +20,16 @@
 \begin{document}
 \maketitle
 
-\section{Part 1: saxpy}
-The CUDA version of saxpy performs at about half the speed of the sequential version. The CUDA version requires around 47ms overall and 1.7ms to run the saxpy kernel. We can explain this difference by noting that copying memory between the host and device takes a significant amount of time. The GTX 480 GPU has a bandwidth of 177.4 Gb/s, while the PCIe-x16 bus has a maximum transfer speed of 5 Gb/s. The saxpy program has a bandwidth of roughly 4.8 Gb/s, which is in line with the limitations of the PCie 2.0 capabilities of the GPU. 
+\section{Overview}
+We 
 
-\section{Part 3: Circle Renderer}
-\subsection{Algorithm Description}
-Our algorithm has three components: (a) Patch Processing, (b) Circle Scanning (b) Circle Blending. We discuss each section in detail below. Note that our implementation uses a slightly different algorithm to process scenes with very small numbers of circles, a detail we discuss in the \hyperref[sec:optimizations]{Optimizations} section. 
+\section{Model Description}
+asdf
 
-\subsubsection{Patch Processing}
-We divide the image into $32$ by $32$ pixel patches. We construct an $m$ by $n$ matrix $P$ and fill it with zeroes, where $m$ is the number of patches and $n$ is the number of circles. For each patch $i$ and circle $j$, we set $P_{i,j}$ to $1$ if and only if $j$ lies on top of $i$. We use the kernel \verb+kernelMapOverPatches+ to compute overlap for each $i,j$ pair, where each CUDA thread checks the overlap of a single $i,j$ pair. We synchronize threads after running \verb+kernelMapOverPatches+ 
+\includegraphics[scale=0.5]{EDA.png}
 
-\subsubsection{Circle Scanning}
-We perform an inclusive prefix sum on each row $P_i$ and store the result in $P_i$. Then, for each $P_i$ we compute a smaller array $S_i$ containing the indices of all circles $j$ that overlap $i$. We compute the prefix sum using the \verb+inclusive_scan+ function in the \verb+thrust+ library. We compute $S_i$ using the kernel \\\verb+kernelMapOverScannedCircles+, where each CUDA thread computes $S_i$ for a single patch $i$. We synchronize threads after running \verb+inclusive_scan+ and after running \verb+kernelMapOverScannedCircles+. 
+\includegraphics[scale=0.5]{num_uses.png}
 
-\subsubsection{Circle Blending}
-For each pixel location $p$, we find the patch $i$ that contains $p$ and sequentially blend every circle $j$ in $S_i$ into the the pixel at $p$ in the appropriate order. We perform the blending with \verb+kernelMapOverPixel+, where each CUDA thread blends the circles for a single pixel location. We synchronize threads after running \verb+kernelMapOverPixel+. 
-
-\subsection{Previous Approaches}
-\label{sec:previous}
-We implemented a handful of other approaches before arriving at our final solution . We discuss each approach below.
-
-\subsubsection{Iterative Circle Processing}
-In this implementation, we sequentially processed each circle $j$ in order of appearance in the circle array to ensure the render applied circles to pixels in the appropriate order. For each $j$, we checked every pixel $p$ in parallel to see if $j$ lay on top of $p$. If so, we blended $j$ into $p$. While this implementation produced acceptable results for the \verb+rgb+ case, it failed to produce reasonable times for the other-cases. The sequential processing of circles proved too large a bottleneck to overcome with parallel pixel processing.
-
-\subsubsection{Patch Processing without Scan}
-In this implementation, we performed the Patch Processing and Circle Blending portions of our final algorithm. We did not, however, compute $S_i$ for each patch $i$. Thus, when performing Circle Blending, we had to sequentially iterate through the entirety of $P_i$ for each patch $i$. Since $|P_i|$ is always equal to the number of circles, this sequential iteration became a large bottleneck. As a result, the implementation fared well on the \verb+rgb+ case, but did not produce reasonable times for the other cases. The use of $P_i$s in the Circle Blending stage proved too difficult a bottleneck to overcome with the other parallelism inherent the implementation. 
-
-\subsection{Optimizations}
-\label{sec:optimizations}
-We performed a number of small optimizations to improve code performance. 
-
-\subsubsection{Simpler Algorithm for Small Scenes}
-We use the Iterative Circle Processing algorithm for scenes that consist of a small number of circles. We found that for small scenes, using the $S_i$'s, as opposed $P_i$'s, did not significantly reduce computation time for the Circle Blending phase. Furthermore, the overhead required to compute the $S_i$'s resulted in sub-optimal times. Thus, we decided to use our old implementation for small scenes. 
-
-\subsubsection{Optimized Thread Block Sizes}
-We used a thread block size of $(1024,1,1)$ for the Patch Processing and Circle Scanning steps and a block size of $(32,32,1)$ for the Circle Blending step. For the small scenes case, we used a block size of $(16,16,1)$. 
-
-\subsection{Performance}
-The score table for our implementation on the GHC 26 machine (GTX 480):
-
-\includegraphics[scale=0.5]{scores_ghc26_02_11}\\\\\\
-The score table for our implementation on the GHC 41 machine (GTX 780):\\
-
-\includegraphics[scale=0.5]{scores_ghc41_02_11}
+\includegraphics[scale=1.0]{female_most_traficked_routes.jpg}
 
 \end{document}
