@@ -1,3 +1,8 @@
 3000 genderless observations, which accounted for most of the 1-time users.
     --Implication -> use two datasets, one for gender models and one for non-
     gender models
+
+Naive Modelling:
+    -Decision Tree of Gender on Latitude and Longitude Variables
+        --Implication -> latitude and longitude are not saying much about the
+            gender

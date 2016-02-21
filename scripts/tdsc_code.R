@@ -2,6 +2,9 @@
 #code meant to study the TDSC dataset
 
 #imports
+library(tree)
+library(bla)
+library(rpart)
 require(ggplot2)
 require(ggmap)
 require(maps)
@@ -104,6 +107,7 @@ stationFrame = data.frame(tripID, latOne, longOne,
                           latTwo, longTwo, l2Distance, 
                           bikeFrame$tripduration ,timeStart)
 
+<<<<<<< HEAD
 minDist = median(l2Distance) + (4 * sd(l2Distance))
 toPlot = subset(stationFrame, l2Distance > minDist)
 
@@ -111,4 +115,27 @@ ggmap(get_map(location = 'new york', zoom = 13))  +
   geom_segment(data = toPlot, mapping = aes(x = longOne, xend = longTwo, y = latOne, yend = latTwo))
 
 # second option is duplicated/ combining the data
-#naive modelling
+#naive modeling
+#decision tree
+#model latitude and longitude with gender
+femaleObs = which(genderBikeFrame$gender == 2)
+genderBikeFrame$genderString = rep("N",dim(genderBikeFrame)[1]) 
+genderBikeFrame$genderString[femaleObs] = "F"
+genderBikeFrame$genderString[!femaleObs] = "M"
+naiveGenderMod.tree = rpart(genderString ~ start.station.latitude + 
+                           start.station.longitude + end.station.latitude 
+                           + end.station.longitude,
+                           data = genderBikeFrame,method = "class")
+plot(genderMod.tree)
+text(genderMod.tree,pretty=1,cex=.75)
+#consider customers
+naiveCustomerMod.tree = rpart(usertype ~ start.station.latitude + 
+                             start.station.longitude + end.station.latitude 
+                             + end.station.longitude,
+                             method = "class",data = bikeFrame)
+plot(naiveCustomerMod.tree)
+text(naiveCustomerMod.tree,pretty=1,cex=.25)
+
+ggmap(get_map(location = 'new york', zoom = 13)) +
+  geom_point(data = bikeFrame, aes(x=start.station.longitude, 
+                                   y=start.station.latitude, size = 1), color="orange")
